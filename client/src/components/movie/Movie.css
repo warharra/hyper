@@ -1,0 +1,23 @@
+.style-menu {
+  background-color: white;
+  border-radius: 6px;
+}
+.btn-info {
+  background: #59045c !important;
+  color: white !important;
+  width: 100%;
+}
+.btn-outline-success {
+  /* font-size: 24px !important; */
+  color: purple !important;
+}
+.rc-slider {
+  background: purple !important;
+}
+.search {
+  font-size: 42 !important;
+  display: block !important;
+  width: 92% !important;
+  margin-right: 20px !important;
+  display: flex;
+}

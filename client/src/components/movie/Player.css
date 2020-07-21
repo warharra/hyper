@@ -1,0 +1,12 @@
+.film {
+  width: 100% !important;
+  height: 200% !important;
+  /* justify-content: center !important; */
+}
+.comments {
+  /* background-color: #fad5c0 !important; */
+  background: linear-gradient(-45deg, #f3acec, #f082e1, #991f93, #7b2eb9);
+  border-radius: 6px !important;
+  color: #fff !important;
+  display: flex;
+}

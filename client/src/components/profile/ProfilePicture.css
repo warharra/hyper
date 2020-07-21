@@ -1,0 +1,17 @@
+.profile-header-container {
+  text-align: center;
+}
+
+.profile-header-img {
+  cursor: pointer;
+  line-height: 1 !important;
+  width: 350px;
+  height: 350px;
+}
+
+.delete {
+  position: absolute;
+  top: 30%;
+  left: -10px;
+  cursor: pointer;
+}

@@ -1,0 +1,22 @@
+.profile-header-container {
+  text-align: center;
+  position: relative;
+}
+
+.movie-img {
+  line-height: 1 !important;
+  width: 85%;
+  height: 100%x;
+  border-radius: 6px;
+}
+
+.desc {
+  font-size: 20%;
+  /* line-height: 10px; */
+  display: flex !important;
+  /* justify-content: center; */
+  text-transform: capitalize;
+}
+.popularity-icon {
+  color: rgb(255, 220, 128);
+}

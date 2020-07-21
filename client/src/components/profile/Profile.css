@@ -1,0 +1,51 @@
+/* .main-row-container {
+  /* flex-wrap: wrap; */
+/* color: #d61098; */
+/* } */
+
+.row-picture {
+  font-family: Roboto, sans-serif;
+  background-color: white !important;
+  border-radius: 6px;
+  flex-wrap: wrap !important;
+  justify-content: center;
+  min-height: 239px;
+}
+.Row {
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.05);
+}
+.row-pictureProfile {
+  background-color: white !important;
+  border-radius: 6px;
+  display: flex !important;
+  flex-wrap: wrap !important;
+}
+
+.label {
+  color: black;
+  border-bottom: 2px solid transparent;
+  font-weight: bold;
+  font-family: Helvetica, sans empattement;
+}
+.profile-btn {
+  background: linear-gradient(-45deg, #ac75a4, #bd579e, #963074, #860d6c);
+  border-color: #fad5c0 !important;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: bold !important;
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.form-label {
+  color: #631a63;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 0.8em;
+}
+
+.form-resetpwd-label {
+  font-weight: 700 !important;
+  color: #545454 !important;
+}

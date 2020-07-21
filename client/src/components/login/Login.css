@@ -1,0 +1,49 @@
+.login-main {
+  display: flex;
+  height: 100%;
+  /* align-items: center; */
+  background-image: url('../../images/hypertube.jpg');
+  /* background-repeat: no-repeat; */
+  background-size: cover;
+  background-position: center;
+}
+
+.login-container {
+  top: 20%;
+  position: absolute;
+  animation: fadein 4s;
+}
+
+.login-container-login-btn {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.login-btn {
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #fff !important;
+}
+
+.login-btn:focus {
+  box-shadow: none !important;
+}
+
+.login-btn:hover {
+  background-color: #e8b9f5;
+  color: #fff !important;
+}
+
+.active-btn {
+  border-bottom: 5px solid #e8b9f5 !important;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
