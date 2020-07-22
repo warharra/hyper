@@ -135,6 +135,7 @@ exports.uploadProfileImage = (req, res) => {
 
 exports.readImage = (req, res) => {
   let uuid = req.userUuid
+  console.log(uuid)
   let image64 = ''
   pool.getConnection((err, connection) => {
     if (err) {
@@ -164,6 +165,7 @@ exports.readImage = (req, res) => {
 }
 
 exports.readProfile = async (req, res) => {
+  console.log('readProfile')
   pool.getConnection((err, connection) => {
     if (err) {
       error.handleError(res, err, 'Internal error', 500, connection)
@@ -176,9 +178,39 @@ exports.readProfile = async (req, res) => {
             error.handleError(res, err, 'Intenal error', 500, connection)
           } else {
             connection.release()
-            console.log(result)
             return res.json({
               email: result[0].Email,
+              pseudo: result[0].UserName,
+              firstName: result[0].FirstName,
+              lastName: result[0].LastName,
+              language: result[0].Language,
+            })
+          }
+        },
+      )
+    }
+  })
+}
+
+exports.readGuestProfile = async (req, res) => {
+  console.log(this.readGuestProfile)
+  const uuid = req.body.guestUuid
+  console.log(uuid)
+  pool.getConnection((err, connection) => {
+    if (err) {
+      error.handleError(res, err, 'Internal error', 500, connection)
+    } else {
+      console.log('je rentre ici')
+      connection.query(
+        `SELECT * FROM user WHERE Uuid = ?`,
+        [uuid],
+        (err, result) => {
+          if (err) {
+            error.handleError(res, err, 'Intenal error', 500, connection)
+          } else {
+            console.log(result)
+            connection.release()
+            return res.json({
               pseudo: result[0].UserName,
               firstName: result[0].FirstName,
               lastName: result[0].LastName,

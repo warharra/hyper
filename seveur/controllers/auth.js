@@ -158,7 +158,7 @@ exports.signin = async (req, res) => {
                   token: token,
                   user: {
                     _id: userUuid,
-                    _lg: lg,
+                    _pseudo: pseudo,
                   },
                   msg: 'successful authentication',
                 })

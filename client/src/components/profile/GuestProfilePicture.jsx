@@ -4,7 +4,7 @@ import { Row, Container, Image } from 'react-bootstrap'
 import { uploadProfileImage, readImage } from '../../api/user'
 import { notificationAlert } from '../functions/notification'
 
-const ProfilePicture = () => {
+const GuestProfilePicture = ({ guestUuid }) => {
   const [values, setValues] = useState({
     uploading: false,
     formData: new FormData(),
@@ -15,7 +15,7 @@ const ProfilePicture = () => {
   const [base64Image, setBase64Image] = useState('')
 
   useEffect(() => {
-    readImage()
+    readImage(guestUuid)
       .then((data) => {
         if (!data || data.err) {
           return
@@ -100,4 +100,4 @@ const ProfilePicture = () => {
   )
 }
 
-export default ProfilePicture
+export default GuestProfilePicture

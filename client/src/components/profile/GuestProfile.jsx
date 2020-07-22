@@ -1,37 +1,36 @@
 import React, { useState, useEffect, Fragment } from 'react'
 import NavbarHeader from '../navbar/Navbar'
 import { Row, Col, Container, Image } from 'react-bootstrap'
-import { readProfile, readImage } from '../../api/user'
+import GuestProfilePicture from './GuestProfilePicture'
 import './Profile.css'
-// import queryString from 'query-string'
-import { lang } from '../../api/auth'
+import queryString from 'query-string'
+import { readGuestProfile } from '../../api/user'
+import { notificationAlert } from '../functions/notification'
+import { useParams, Redirect } from 'react-router-dom'
 
 const GuestProfile = ({ location }) => {
   const [values, setValues] = useState({
     pseudo: '',
     firstName: '',
     lastName: '',
-    path: '',
+    language: '',
   })
-  const [language, setLanguage] = useState('en')
+  let { id } = useParams()
 
   useEffect(() => {
-    lang()
+    readGuestProfile(id)
       .then((data) => {
-        setLanguage(data.Language)
+        console.log(data)
+        if (data.err) {
+          notificationAlert(data.err, 'danger', 'bottom-center')
+        } else {
+          setValues({
+            ...data,
+          })
+        }
       })
       .catch((err) => console.log(err))
-  }, [language])
-
-  // useEffect(() => {
-  //    const v = queryString.parse(location.search)
-  // const data = await readGuestProfile(v.uuid);
-  // if (data.err) {
-  //     console.log(data.err)
-  // } else {
-  //     setValues({...data})
-  // }
-  // }, [location])
+  }, [location])
 
   return (
     <Fragment>
@@ -44,22 +43,25 @@ const GuestProfile = ({ location }) => {
               style={{ justifyContent: 'center' }}
             >
               <div className="profile-header-container">
-                <Image
-                  className="profile-header-img"
-                  src={
-                    'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSIYgLrhXnXEzM46_zfFdhFMsBObxy9bMCAyA&usqp=CAU'
-                  }
-                  roundedCircle
-                />
+                <GuestProfilePicture iguestUuid={id} />
               </div>
             </Row>
             <Row className="pt-4 row-infos">
               <Col>
                 <Row className="mb-4 pt-3 pb-3 Row">
                   <Col className="pt-4 row-infos">
-                    <h2>userName: wafa200</h2>
-                    <h2>lastName : Meddah</h2>
-                    <h2>FirsName : wafae</h2>
+                    <h2>
+                      {values.language === 'fr' ? 'Pseudo :' : 'userName:'}{' '}
+                      {values.pseudo}
+                    </h2>
+                    <h2>
+                      {values.language === 'fr' ? 'Nom :' : 'LastName:'}{' '}
+                      {values.firstName}
+                    </h2>
+                    <h2>
+                      {values.language === 'fr' ? 'Prenom :' : 'FirstName:'}{' '}
+                      {values.lastName}
+                    </h2>
                   </Col>
                 </Row>
               </Col>

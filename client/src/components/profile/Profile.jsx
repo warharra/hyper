@@ -155,10 +155,10 @@ const Profile = ({ location }) => {
                               : 'Mot de passe'}
                           </Form.Label>
                           <Form.Control
-                            value={values.password || ''}
+                            // value={values.password}
                             type="password"
                             placeholder="password"
-                            onChange={() => handleChange('password')}
+                            onChange={handleChange('password')}
                           ></Form.Control>
                         </Form.Group>
 

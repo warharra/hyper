@@ -12,6 +12,7 @@ exports.isAuthenticated = (req, res) => {
 
 exports.sendComment = (req, res) => {
   const { movie_id, comment } = req.body.data
+  console.log('sendComment')
   pool.getConnection((err, connection) => {
     if (err) {
       error.handleError(res, err, 'Internal error', 500, connection)
@@ -45,6 +46,7 @@ exports.sendComment = (req, res) => {
 
 exports.getComment = (req, res) => {
   const { movie_id } = req.body
+  console.log('getComment')
   pool.getConnection((err, connection) => {
     if (err) {
       error.handleError(res, err, 'Internal error', 500, connection)
@@ -56,6 +58,7 @@ exports.getComment = (req, res) => {
           if (err) {
             error.handleError(res, err, 'Internal error', 500, connection)
           } else {
+            console.log(result)
             let tabComment = result.map((e) => {
               return {
                 userName: e.UserName,

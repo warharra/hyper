@@ -30,7 +30,6 @@ exports.verifyToken = (req, res, next) => {
             } else {
               req.userName = result[0].UserName
               req.lang = result[0].Language
-              console.log(req.lang)
               connection.release
             }
           },

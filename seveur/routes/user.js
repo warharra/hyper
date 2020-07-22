@@ -6,6 +6,7 @@ const {
   uploadProfileImage,
   readImage,
   readProfile,
+  readGuestProfile,
   updateProfile,
 } = require('../controllers/user')
 
@@ -34,5 +35,5 @@ router.post(
 
 router.post('/profile/readImage', verifyToken, readImage)
 router.post('/profile/readProfile', verifyToken, readProfile)
-
+router.post('/profile/readGuestProfile', verifyToken, readGuestProfile)
 module.exports = router

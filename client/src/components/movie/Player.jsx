@@ -8,6 +8,7 @@ import {
   Button,
   Badge,
 } from 'react-bootstrap'
+import { Link } from 'react-router-dom'
 import YouTube from '@u-wave/react-youtube'
 // import { useParams, Redirect } from 'react-router-dom'
 import './Movie.css'
@@ -49,7 +50,11 @@ const Player = () => {
   const [comment, setComment] = useState('')
   const [tabComment, setTabComment] = useState([])
 
+  let jwt = JSON.parse(localStorage.getItem('jwt'))
+  let pseudo = jwt.user._pseudo
+  let userUuid = jwt.user._id
   let { id } = useParams()
+
   useEffect(() => {
     ;(async () => {
       const { data, error } = await fetchMovie(urlMovie, id)
@@ -72,7 +77,7 @@ const Player = () => {
       })
       .catch((err) => console.log(err))
   }, [])
-
+  console.log(movies)
   const handlechange = (event) => {
     setComment([event.target.value])
   }
@@ -84,6 +89,10 @@ const Player = () => {
     })
       .then((data) => {
         notificationAlert(data.msg, 'success', 'bottom-center')
+        setTabComment((tabComment) => [
+          ...tabComment,
+          { comment: comment, userName: pseudo },
+        ])
         setComment('')
       })
       .catch((err) => console.log(err))
@@ -140,7 +149,11 @@ const Player = () => {
             </Row>
             <Row className="mb-5 pb-5 mt-2">
               <Col>
-                <YouTube className="film" video="ISGBUaojwfs" autoplay />
+                <YouTube
+                  className="film"
+                  video="https://utweb.trontv.com/gui/index.html?#/player/6c14dc4beb375c658b79d8427cbccef121123b21/0"
+                  autoplay
+                />
               </Col>
             </Row>
             <Row className="mb-4 pt-5 pb-4 mt-5 ">
@@ -169,9 +182,11 @@ const Player = () => {
                     {tabComment.map((comment, i) => {
                       return (
                         <div key={i}>
-                          <Badge key={i} className="comments mr-2 pl-2 mt-2">
-                            {comment.userName}
-                          </Badge>
+                          <Link to={`/profile/${userUuid}`}>
+                            <Badge key={i} className="comments mr-2 pl-2 mt-2">
+                              {comment.userName}
+                            </Badge>
+                          </Link>
                           {comment.comment}
                         </div>
                       )
