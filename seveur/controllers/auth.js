@@ -17,7 +17,7 @@ const generateJwt = (userUuid) => {
 exports.signup = (req, res) => {
   const { email, pseudo, password, firstName, lastName, base64Image } = req.body
   let uuid = ''
-
+  console.log(req.body)
   function decodeBase64Image(dataString) {
     var matches = dataString.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)
     var response = {}
@@ -28,6 +28,7 @@ exports.signup = (req, res) => {
     }
     response.type = matches[1]
     response.data = new Buffer(matches[2], 'base64')
+    console.log(response)
     return response
   }
   if (!fs.existsSync(__dirname + `/../images/${pseudo}`)) {

@@ -17,8 +17,9 @@ import NavbarHeader from '../navbar/Navbar'
 import { useParams, Redirect } from 'react-router-dom'
 import axios from 'axios'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faStar } from '@fortawesome/free-solid-svg-icons'
-import { sendComment, getComment } from '../../api/films'
+import { faStar, faEye } from '@fortawesome/free-solid-svg-icons'
+import { sendComment, getComment, viewMovie, isDownload } from '../../api/films'
+import { API } from '../../config'
 // import CustomSpinner from '../auth/Spinner'
 
 import { notificationAlert } from '../functions/notification'
@@ -32,7 +33,6 @@ const withData = (data) => {
 const fetchMovie = async (url, id) => {
   try {
     let { data: res } = await axios.get(url + id)
-
     return withData(res.data.movie)
   } catch (err) {
     console.log(err)
@@ -49,11 +49,13 @@ const Player = () => {
   const [movies, setMovies] = useState([])
   const [comment, setComment] = useState('')
   const [tabComment, setTabComment] = useState([])
-
+  const [view, setView] = useState('0')
+  console.log(view)
   let jwt = JSON.parse(localStorage.getItem('jwt'))
   let pseudo = jwt.user._pseudo
   let userUuid = jwt.user._id
   let { id } = useParams()
+  let { title } = useParams()
 
   useEffect(() => {
     ;(async () => {
@@ -77,9 +79,63 @@ const Player = () => {
       })
       .catch((err) => console.log(err))
   }, [])
+
+  useEffect(() => {
+    viewMovie(id)
+      .then((data) => {
+        if (data.err) {
+          notificationAlert(data.err, 'danger', 'bottom-center')
+        } else {
+          setView(data)
+        }
+      })
+      .catch((err) => console.log(err))
+  }, [])
+
+  useEffect(() => {
+    handleDownload()
+  }, [view])
   console.log(movies)
   const handlechange = (event) => {
     setComment([event.target.value])
+  }
+  const handleStreams = () => {
+    isDownload({
+      title: movies.title_long,
+      id: id,
+      torrents: movies.torrents,
+    })
+      .then((data) => {
+        console.log(data)
+      })
+      .catch((err) => console.log(err))
+  }
+
+  const handleDownload = () => {
+    // if (view === 0)
+    return (
+      <Col>
+        <a onClick={handleStreams}>
+          <video
+            className="film"
+            id="videoPlayer"
+            autoPlay
+            controls
+            src={`${API}/getVideo/${title}`}
+            type="video/mp4"
+          />
+        </a>
+      </Col>
+    )
+    // else {
+    //   return (
+    //     <Col>
+    //       <video id="videoPlayer" controls className="film">
+    //         <source src={`${API}/getVideo/${id}`} type="video/mp4" />
+    //       </video>
+    //     </Col>
+    //   )
+    // }
   }
 
   const handleSendComment = () => {
@@ -138,7 +194,16 @@ const Player = () => {
           <Col md={8} className="pl-5 mt-5">
             <Row className="mb-4 pt-3 pb-4 mt-4 Row">
               <Col>
-                <h2>{movies.title_long}</h2>
+                {view === 1 || view === 2 ? (
+                  <FontAwesomeIcon
+                    icon={faEye}
+                    className="ml-2 popularity-icon"
+                  />
+                ) : (
+                  <Fragment></Fragment>
+                )}
+
+                <h2>{movies.title_long} </h2>
                 {/* <p> Date de sortie : 24/01/2020 Au cinéma (02h30)</p> */}
                 <p>Titre original : {movies.title} </p>
                 {/* <p>Réalisé par : Remo D'Souza </p> */}
@@ -147,15 +212,7 @@ const Player = () => {
                 <p>Synopsis : {movies.description_intro}</p>
               </Col>
             </Row>
-            <Row className="mb-5 pb-5 mt-2">
-              <Col>
-                <YouTube
-                  className="film"
-                  video="https://utweb.trontv.com/gui/index.html?#/player/6c14dc4beb375c658b79d8427cbccef121123b21/0"
-                  autoplay
-                />
-              </Col>
-            </Row>
+            <Row className="mb-5 pb-5 mt-2">{handleDownload()}</Row>
             <Row className="mb-4 pt-5 pb-4 mt-5 ">
               <Col className=" pl-1">
                 <Form>

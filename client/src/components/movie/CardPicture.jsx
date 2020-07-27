@@ -27,7 +27,7 @@ const CardPicture = ({ movie }) => {
   return (
     <Fragment>
       <Link
-        to={`/player/${movie.id}`}
+        to={`/player/${movie.id}/${movie.title_long}`}
         style={{
           color: 'grey',
           fontWeight: '500',
