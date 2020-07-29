@@ -42,7 +42,7 @@ const Filter = ({ setSortMovies }) => {
           color: '#808080',
         }}
       >
-        <Form.Row className="px-4 py-4">
+        {/* <Form.Row className="px-4 py-4">
           <Form.Group as={Col}>
             <Form.Label>Date</Form.Label>
             <SliderWithTooltip
@@ -53,7 +53,7 @@ const Filter = ({ setSortMovies }) => {
               marks={{ 1990: '1990', 2020: '2020' }}
             />
           </Form.Group>
-        </Form.Row>
+        </Form.Row> */}
 
         <Form.Row className="px-4 py-4">
           <Form.Group as={Col}>

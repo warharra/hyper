@@ -70,7 +70,7 @@ const Movie = () => {
   useEffect(() => {
     ;(async () => {
       const { data, error } = await fetchMovieList(sort)
-      if (error) {
+      if (error || typeof data === 'object') {
         return notificationAlert('err fetch', 'danger', 'bottom-center')
       }
       if (genre !== 1) setMovies((movies) => [...movies, ...data])

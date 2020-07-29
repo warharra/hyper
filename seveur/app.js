@@ -7,7 +7,6 @@ const chalk = require('chalk')
 const passport = require('passport')
 var FortyTwoStrategy = require('passport-42').Strategy
 const GoogleStrategy = require('passport-google-oauth20').Strategy
-
 //app
 const app = express()
 const http = require('http').createServer(app)
@@ -18,46 +17,41 @@ const movieRoutes = require('./routes/movie')
 const userRoutes = require('./routes/user')
 const pool = require('./db')
 const error = require('./controllers/error')
-
 //middlewares
 app.use(morgan('dev'))
 app.use(cors())
 app.use(bodyParser.json())
-
 //routes middlewares
 app.use('/api', authRoutes)
 app.use('/api', movieRoutes)
 app.use('/api', userRoutes)
-
 passport.serializeUser((user, cb) => {
   cb(null, user)
 })
-
 passport.deserializeUser((user, cb) => {
   cb(null, user)
 })
-
 passport.use(
   new GoogleStrategy(
     {
       clientID:
-        '621024674981-r11gercjdv0b22nejofm3om64hh2bifg.apps.googleusercontent.com',
-      clientSecret: 'xHpox7DueTpHuOpT4sj72Vwj',
+        '1056953163850-jkbpdrgdjpeg423bf75s1g6mdfj0ccjl.apps.googleusercontent.com',
+      clientSecret: 'H6cYsFmuPejl30Aa1sTM16Lv',
       callbackURL: 'http://localhost:9000/auth/google/callback',
+      scope: ['profile', 'email'],
     },
     (accessToken, refreshToken, profile, cb) => {
       console.log(profile)
       // User.findOrCreate({ fortytwoId: profile.id }, function (err, user) {
-      User = { ...profile }
-      const generateJwt = jwt.sign({ _id: userUuidd }, process.env.JWT_SECRET, {
-        xpiresIn: 86400,
-      })
-      return cb(err, profile, generateJwt)
+      // User = { ...profile }
+      // const generateJwt = jwt.sign({ _id: userUuidd }, process.env.JWT_SECRET, {
+      //   xpiresIn: 86400,
+      // })
+      return cb(err, profile)
       // })
     },
   ),
 )
-
 app.get(
   '/auth/google',
   passport.authenticate('google', {
@@ -66,45 +60,61 @@ app.get(
 )
 app.get(
   '/auth/google/callback',
-  passport.authenticate('google', (req, res) => {
-    res.redirect('/')
+  passport.authenticate('google', {
+    failureRedirect: 'http://localhost:3000/login/google',
   }),
-)
-
-passport.use(
-  new FortyTwoStrategy(
-    {
-      clientID:
-        'ccaae51de870948d512c9091a785490ef0dd1e86d1a3c262dcb27e66d505ec55',
-      clientSecret:
-        'f44a86c7273f9c5f8a5e56a3e7348b728a4031d15db21c52c3d03d66e9ad1fc9',
-      callbackURL: 'http://localhost:9000/auth/42/callback',
-    },
-    (accessToken, refreshToken, profile, cb) => {
-      console.log(profile)
-      // User.findOrCreate({ fortytwoId: profile.id }, function (err, user) {
-      User = { ...profile }
-      const generateJwt = jwt.sign({ _id: userUuidd }, process.env.JWT_SECRET, {
-        xpiresIn: 86400,
-      })
-      return cb(err, profile, generateJwt)
-      // })
-    },
-  ),
-)
-
+  (req, res) => {
+    console.log('connected')
+    res.redirect('/')
+  },
+),
+  passport.use(
+    new FortyTwoStrategy(
+      {
+        clientID:
+          'ccaae51de870948d512c9091a785490ef0dd1e86d1a3c262dcb27e66d505ec55',
+        clientSecret:
+          'f44a86c7273f9c5f8a5e56a3e7348b728a4031d15db21c52c3d03d66e9ad1fc9',
+        callbackURL: 'http://localhost:9000/auth/42/callback',
+        profileFields: {
+          id: function (obj) {
+            return String(obj.id)
+          },
+          username: 'login',
+          displayName: 'displayname',
+          'name.familyName': 'last_name',
+          'name.givenName': 'first_name',
+          profileUrl: 'url',
+          'emails.0.value': 'email',
+          'phoneNumbers.0.value': 'phone',
+          'photos.0.value': 'image_url',
+        },
+      },
+      async (req, accessToken, refreshToken, profile, done) => {
+        console.log('profile: ', profile)
+        // User.findOrCreate({ fortytwoId: profile.id }, function (err, user) {
+        //   return cb(err, user);
+        // });
+        return done(null, null)
+      },
+    ),
+  )
 app.get('/auth/42', passport.authenticate('42'))
 app.get(
   '/auth/42/callback',
-  passport.authenticate('42', (req, res) => {
-    res.redirect('/movie')
+  passport.authenticate('42', {
+    failureRedirect: 'http://localhost:3000/login',
   }),
+  function (req, res) {
+    console.log('caaaaall')
+    // Successful authentication, redirect home.
+    res.redirect('/')
+  },
 )
 app.get('/user', (req, res) => {
   console.log('getting user data')
   res.send(user)
 })
-
 const port = process.env.PORT || 9000
 http.listen(port, () => {
   console.log(chalk.blue(`App listen on port ${port}`))

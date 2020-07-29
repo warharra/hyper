@@ -57,6 +57,7 @@ export const getComment = (movie_id) => {
 }
 
 export const isDownload = (data) => {
+  console.log(data)
   let jwt = JSON.parse(localStorage.getItem('jwt'))
   return fetch(`${API}/isDownload`, {
     method: 'POST',

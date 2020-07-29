@@ -9,6 +9,12 @@ import { faStar } from '@fortawesome/free-solid-svg-icons'
 
 const CardPicture = ({ movie }) => {
   const [base64Image, setBase64Image] = useState('')
+  console.log(movie.torrents)
+  let hash =
+    movie.torrents.length === 1
+      ? movie.torrents[0].hash
+      : movie.torrents[1].hash
+  console.log(hash)
 
   const handleImage = () => {
     return (

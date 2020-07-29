@@ -11,6 +11,7 @@ const { title } = require('process')
 const { hash } = require('bcrypt')
 var https = require('https')
 var torrentStream = require('torrent-stream')
+const find = require('find')
 
 exports.isAuthenticated = (req, res) => {
   return res.json({ auth: true })
@@ -69,7 +70,6 @@ exports.getComment = (req, res) => {
                 comment: e.comment,
               }
             })
-            console.log(tabComment)
             connection.release
             return res.json(tabComment)
           }
@@ -123,15 +123,16 @@ exports.viewMovie = (req, res) => {
 }
 exports.isDownload = (req, res) => {
   const { title, id, torrents } = req.body.data
-  let hash = torrents[1].hash
-  console.log(url)
+  console.log('IsDownload')
+
+  let hash = torrents.length === 1 ? torrents[0].hash : torrents[1].hash
   let file = __dirname + `/../movie/`
-
   var engine = torrentStream('magnet:?xt=urn:btih:' + hash, { path: file })
-
+  console.log(engine)
   engine.on('ready', function () {
     console.log(engine.files)
     engine.files.forEach(function (file) {
+      console.log(file.name)
       var stream = file.createReadStream()
     })
   })
@@ -179,17 +180,48 @@ exports.isDownload = (req, res) => {
     }
   })
 }
+// const setMovie = (hash) => {
+//   return new Promise((resolve, reject) => {
+//     let file = __dirname + `/../movie/`
+//     var engine = torrentStream('magnet:?xt=urn:btih:' + hash, { path: file })
+//     console.log(engine)
+//     engine.on('ready', function () {
+//       console.log(engine.files)
+//       engine.files.forEach(function (file) {
+//         console.log(file.name)
+//         var stream = file.createReadStream()
+//         resolve(file.name)
+//       })
+//     })
+//   })
+// }
+const getPath = (name) => {
+  return new Promise((resolve, reject) => {
+    find.file(__dirname + `/../movie/`, function (files) {
+      console.log(files)
+      files.map((f, i) => {
+        console.log(f.search(name))
+        if (f.search(name) > 0) {
+          resolve(f)
+        }
+      })
+    })
+  })
+}
 
-exports.getVideo = (req, res) => {
+exports.getVideo = async (req, res) => {
   console.log('GETVIDEO')
   var id_film = req.params.id
   let T = id_film.replace(/ /g, '.')
   let TT = T.replace('(', '')
-  let name = TT.replace(')', '')
+  let TTT = TT.replace(':', '.')
+  let TTTT = TTT.replace('..', '.')
+  let name = TTTT.replace(')', '')
   console.log(name)
-  let path =
-    __dirname +
-    `/../movie/${id_film} [720p] [BluRay] [YTS.MX]/${name}.720p.BluRay.x264.AAC-[YTS.MX].mp4`
+  let pathMovie = await getPath(name)
+  console.log('pathMovie: ', pathMovie)
+
+  let path = pathMovie
   fs.stat(path, (err, stat) => {
     if (err) return res.status(500).send('internal error')
     const fileSize = stat.size

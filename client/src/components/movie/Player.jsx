@@ -50,7 +50,6 @@ const Player = () => {
   const [comment, setComment] = useState('')
   const [tabComment, setTabComment] = useState([])
   const [view, setView] = useState('0')
-  console.log(view)
   let jwt = JSON.parse(localStorage.getItem('jwt'))
   let pseudo = jwt.user._pseudo
   let userUuid = jwt.user._id
@@ -100,15 +99,19 @@ const Player = () => {
     setComment([event.target.value])
   }
   const handleStreams = () => {
+    console.log('isDownload')
     isDownload({
       title: movies.title_long,
       id: id,
       torrents: movies.torrents,
     })
-      .then((data) => {
-        console.log(data)
-      })
+      .then((data) => {})
       .catch((err) => console.log(err))
+    console.log('update ????')
+    // setView(view + 1)
+    setTimeout(() => {
+      window.location.reload(false)
+    }, 5000)
   }
 
   const handleDownload = () => {
