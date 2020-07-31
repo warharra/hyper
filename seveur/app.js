@@ -5,8 +5,10 @@ const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const chalk = require('chalk')
 const passport = require('passport')
-var FortyTwoStrategy = require('passport-42').Strategy
+
 const GoogleStrategy = require('passport-google-oauth20').Strategy
+const utils = require('./utility/utils')
+const jwt = require('jsonwebtoken')
 //app
 const app = express()
 const http = require('http').createServer(app)
@@ -25,10 +27,17 @@ app.use(bodyParser.json())
 app.use('/api', authRoutes)
 app.use('/api', movieRoutes)
 app.use('/api', userRoutes)
+app.use(passport.initialize())
+app.use(passport.session())
+var FortyTwoStrategy = require('passport-42').Strategy
+
 passport.serializeUser((user, cb) => {
+  console.log('______________________-----')
+  console.log(user)
   cb(null, user)
 })
 passport.deserializeUser((user, cb) => {
+  console.log(user)
   cb(null, user)
 })
 passport.use(
@@ -40,18 +49,26 @@ passport.use(
       callbackURL: 'http://localhost:9000/auth/google/callback',
       scope: ['profile', 'email'],
     },
-    (accessToken, refreshToken, profile, cb) => {
-      console.log(profile)
-      // User.findOrCreate({ fortytwoId: profile.id }, function (err, user) {
-      // User = { ...profile }
-      // const generateJwt = jwt.sign({ _id: userUuidd }, process.env.JWT_SECRET, {
-      //   xpiresIn: 86400,
-      // })
-      return cb(err, profile)
-      // })
+    async (accessToken, refreshToken, profile, cb) => {
+      let result = await utils.getUserOuth(profile.displayName)
+      console.log('result:', result)
+      if (result === 'user not find') {
+        let register = await utils.setUserOuth(
+          profile.emails[0].value,
+          profile.displayName,
+          profile.name.givenName,
+          profile.name.familyName,
+          profile.photos[0].value,
+        )
+        if (register === `success`) {
+          result = await utils.getUserOuth(profile.displayName)
+        }
+      }
+      return cb(null, result)
     },
   ),
 )
+
 app.get(
   '/auth/google',
   passport.authenticate('google', {
@@ -61,60 +78,80 @@ app.get(
 app.get(
   '/auth/google/callback',
   passport.authenticate('google', {
-    failureRedirect: 'http://localhost:3000/login/google',
+    failureRedirect: 'http://localhost:3000/login',
   }),
-  (req, res) => {
+  function (req, res) {
     console.log('connected')
-    res.redirect('/')
+    // Successful authentication, redirect home
+    res.redirect(
+      `http://localhost:3000/auth/42/callback/${req.user.user._id}/${req.user.token}/${req.user.user._pseudo}`,
+    )
   },
-),
-  passport.use(
-    new FortyTwoStrategy(
-      {
-        clientID:
-          'ccaae51de870948d512c9091a785490ef0dd1e86d1a3c262dcb27e66d505ec55',
-        clientSecret:
-          'f44a86c7273f9c5f8a5e56a3e7348b728a4031d15db21c52c3d03d66e9ad1fc9',
-        callbackURL: 'http://localhost:9000/auth/42/callback',
-        profileFields: {
-          id: function (obj) {
-            return String(obj.id)
-          },
-          username: 'login',
-          displayName: 'displayname',
-          'name.familyName': 'last_name',
-          'name.givenName': 'first_name',
-          profileUrl: 'url',
-          'emails.0.value': 'email',
-          'phoneNumbers.0.value': 'phone',
-          'photos.0.value': 'image_url',
+)
+
+passport.use(
+  new FortyTwoStrategy(
+    {
+      clientID:
+        'ccaae51de870948d512c9091a785490ef0dd1e86d1a3c262dcb27e66d505ec55',
+      clientSecret:
+        'f44a86c7273f9c5f8a5e56a3e7348b728a4031d15db21c52c3d03d66e9ad1fc9',
+      callbackURL: 'http://localhost:9000/auth/42/callback',
+      profileFields: {
+        id: function (obj) {
+          return String(obj.id)
         },
+        username: 'login',
+        displayName: 'displayname',
+        'name.familyName': 'last_name',
+        'name.givenName': 'first_name',
+        profileUrl: 'url',
+        'emails.0.value': 'email',
+        'phoneNumbers.0.value': 'phone',
+        'photos.0.value': 'image_url',
       },
-      async (req, accessToken, refreshToken, profile, done) => {
-        console.log('profile: ', profile)
-        // User.findOrCreate({ fortytwoId: profile.id }, function (err, user) {
-        //   return cb(err, user);
-        // });
-        return done(null, null)
-      },
-    ),
-  )
-app.get('/auth/42', passport.authenticate('42'))
+    },
+    async (req, accessToken, refreshToken, profile, done) => {
+      console.log(profile.username)
+      console.log('profile: ', profile)
+      let result = await utils.getUserOuth(profile.username)
+      console.log('result :', result)
+      if (result === 'user not find') {
+        let register = await utils.setUserOuth(
+          profile.emails[0].value,
+          profile.username,
+          profile.name.givenName,
+          profile.name.familyName,
+          profile.photos[0].value,
+        )
+        if (register === `success`) {
+          result = await utils.getUserOuth(profile.username)
+        }
+      }
+      console.log('(((((((((((((((((((((((((((((((')
+      console.log(result)
+      return done(null, result)
+    },
+  ),
+)
+app.get('/auth/42', () => {
+  passport.authenticate('42')
+})
+
 app.get(
   '/auth/42/callback',
   passport.authenticate('42', {
     failureRedirect: 'http://localhost:3000/login',
   }),
   function (req, res) {
-    console.log('caaaaall')
-    // Successful authentication, redirect home.
-    res.redirect('/')
+    console.log('req.user')
+    // Successful authentication, redirect home
+    res.redirect(
+      `http://localhost:3000/auth/42/callback/${req.user.user._id}/${req.user.token}/${req.user.user._pseudo}`,
+    )
   },
 )
-app.get('/user', (req, res) => {
-  console.log('getting user data')
-  res.send(user)
-})
+
 const port = process.env.PORT || 9000
 http.listen(port, () => {
   console.log(chalk.blue(`App listen on port ${port}`))

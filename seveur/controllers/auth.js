@@ -123,6 +123,7 @@ exports.signup = (req, res) => {
 exports.signin = async (req, res) => {
   const { pseudo, password } = req.body
   console.log(req.body)
+  console.log(pseudo)
   pool.getConnection((err, connection) => {
     if (err) {
       return res.status(500).json({

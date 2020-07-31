@@ -165,6 +165,7 @@ exports.readImage = (req, res) => {
 }
 
 exports.readProfile = async (req, res) => {
+  console.log('PPPPPPPPPPPPPPPPPPPp')
   console.log('readProfile')
   pool.getConnection((err, connection) => {
     if (err) {

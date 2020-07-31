@@ -6,6 +6,7 @@ import Movie from './components/movie/Movie'
 import Profile from './components/profile/Profile'
 import GuestProfile from './components/profile/GuestProfile'
 import Player from './components/movie/Player'
+import Auth42 from './components/login/Auth42'
 import PrivateRoute from './components/auth/PrivateRoute'
 import NotFound from './components/404/NotFound'
 import CustomRoute from './components/auth/CustomRoute'
@@ -32,6 +33,12 @@ const Routes = () => {
           <Route path="/login" exact component={Login}></Route>;
           <Route path="/profile/:id" exact component={GuestProfile}></Route>;
           <Route path="/player/:id/:title" exact component={Player}></Route>;
+          <Route
+            path="/auth/42/callback/:id/:token/:pseudo"
+            exact
+            component={Auth42}
+          ></Route>
+          ;
           <Route
             path="/recoverPassword"
             exact

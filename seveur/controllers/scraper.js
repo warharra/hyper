@@ -219,7 +219,9 @@ exports.getVideo = async (req, res) => {
   let name = TTTT.replace(')', '')
   console.log(name)
   let pathMovie = await getPath(name)
+  console.log('++++++++++++++++++++++==')
   console.log('pathMovie: ', pathMovie)
+  console.log('++++++++++++++++++++++==')
 
   let path = pathMovie
   fs.stat(path, (err, stat) => {

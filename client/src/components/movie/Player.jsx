@@ -9,19 +9,14 @@ import {
   Badge,
 } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
-import YouTube from '@u-wave/react-youtube'
-// import { useParams, Redirect } from 'react-router-dom'
-import './Movie.css'
 import './Player.css'
 import NavbarHeader from '../navbar/Navbar'
-import { useParams, Redirect } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import axios from 'axios'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faStar, faEye } from '@fortawesome/free-solid-svg-icons'
 import { sendComment, getComment, viewMovie, isDownload } from '../../api/films'
 import { API } from '../../config'
-// import CustomSpinner from '../auth/Spinner'
-
 import { notificationAlert } from '../functions/notification'
 
 const withData = (data) => {
@@ -32,7 +27,9 @@ const withData = (data) => {
 }
 const fetchMovie = async (url, id) => {
   try {
-    let { data: res } = await axios.get(url + id)
+    let { data: res } = await axios.get(
+      url + id + '&with_images=true&with_cast=true',
+    )
     return withData(res.data.movie)
   } catch (err) {
     console.log(err)
@@ -45,8 +42,9 @@ const fetchMovie = async (url, id) => {
 
 const Player = () => {
   const urlMovie = `https://yts.mx/api/v2/movie_details.json?movie_id=`
-  const urlInfo = `https://yts.mx/api/v2/movie_details.json?movie_id=`
+  // const urlMovie = `https://yts.mx/api/v2/movie_details.json?movie_id=&with_images=true&with_cast=true`
   const [movies, setMovies] = useState([])
+  const [cast, setCast] = useState([])
   const [comment, setComment] = useState('')
   const [tabComment, setTabComment] = useState([])
   const [view, setView] = useState('0')
@@ -63,9 +61,14 @@ const Player = () => {
         console.log(error)
         return
       }
+      console.log(data)
       setMovies({ ...movies, ...data })
+      setCast({ ...cast, ...data.cast })
     })()
   }, [id])
+  console.log('**********************************888')
+  console.log(cast)
+  console.log('**********************************888')
 
   useEffect(() => {
     getComment(id)
@@ -109,9 +112,9 @@ const Player = () => {
       .catch((err) => console.log(err))
     console.log('update ????')
     // setView(view + 1)
-    setTimeout(() => {
-      window.location.reload(false)
-    }, 5000)
+    // setTimeout(() => {
+    //   window.location.reload(false)
+    // }, 5000)
   }
 
   const handleDownload = () => {
@@ -139,6 +142,16 @@ const Player = () => {
     //     </Col>
     //   )
     // }
+  }
+  const handleActeur = () => {
+    let acteur = ''
+    {
+      Object.keys(cast).forEach(function (key) {
+        console.log('cast: ', cast[key].name)
+        acteur = acteur + ' ' + cast[key].name
+      })
+    }
+    return <Fragment>{acteur}</Fragment>
   }
 
   const handleSendComment = () => {
@@ -210,7 +223,7 @@ const Player = () => {
                 {/* <p> Date de sortie : 24/01/2020 Au cinéma (02h30)</p> */}
                 <p>Titre original : {movies.title} </p>
                 {/* <p>Réalisé par : Remo D'Souza </p> */}
-                <p>Acteurs : Shraddha Kapoor, Varun Dhawan, Prabhu Deva.</p>
+                <p>Acteurs : {handleActeur()}</p>
                 <p>Genre : {movies.genres}</p>
                 <p>Synopsis : {movies.description_intro}</p>
               </Col>

@@ -1,8 +1,10 @@
 const jwt = require('jsonwebtoken')
 const pool = require('../db')
+const error = require('./error')
+
 exports.verifyToken = (req, res, next) => {
+  console.log('verifyToken ++++++++++++++++++++++++++++++++++==')
   const authorization = req.headers.authorization
-  let userName = ''
   if (!authorization) {
     return res.status(403).json({ auth: false, msg: 'No token provided.' })
   }
@@ -17,6 +19,7 @@ exports.verifyToken = (req, res, next) => {
         .json({ auth: false, message: 'Failed to authenticate token.' })
     }
     req.userUuid = decoded._id
+    // if (!req.userName && !req.lang) {
     pool.getConnection((err, connection) => {
       if (err) {
         error.handleError(res, err, 'Internal error', 500, connection)
@@ -28,6 +31,7 @@ exports.verifyToken = (req, res, next) => {
             if (err) {
               error.handleError(res, err, 'Internal error', 500, connection)
             } else {
+              console.log(result[0].UserName)
               req.userName = result[0].UserName
               req.lang = result[0].Language
               connection.release
@@ -36,6 +40,7 @@ exports.verifyToken = (req, res, next) => {
         )
       }
     })
+    // }
 
     req.userUuid = decoded._id
     next()

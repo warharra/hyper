@@ -5,7 +5,7 @@ import { notificationAlert } from '../functions/notification'
 import { Row, Col, Container, Button, FormControl, Form } from 'react-bootstrap'
 import Sort from './Sort'
 import Filter from './Filter'
-import { lang } from '../../api/auth'
+// import { lang } from '../../api/auth'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faSearch,
@@ -18,7 +18,7 @@ import axios from 'axios'
 import Select from 'react-select'
 import makeAnimated from 'react-select/animated'
 
-const API_KEY = '4b267219'
+// const API_KEY = '4b267219'
 
 const withData = (data) => {
   return {
@@ -70,7 +70,7 @@ const Movie = () => {
   useEffect(() => {
     ;(async () => {
       const { data, error } = await fetchMovieList(sort)
-      if (error || typeof data === 'object') {
+      if (error) {
         return notificationAlert('err fetch', 'danger', 'bottom-center')
       }
       if (genre !== 1) setMovies((movies) => [...movies, ...data])
